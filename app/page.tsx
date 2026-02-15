@@ -468,12 +468,12 @@ export default function Home() {
                 onKeyPress={(e) => e.key === 'Enter' && handleCheckAnswer()}
                 placeholder="Your answer"
                 disabled={feedback !== null}
-                className={`w-full px-6 py-4 text-center text-xl border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${
+                className={`w-full px-6 py-4 text-center text-xl text-gray-900 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${
                   feedback === 'correct'
                     ? 'border-green-400 bg-green-50'
                     : feedback === 'incorrect'
                     ? 'border-red-400 bg-red-50'
-                    : 'border-gray-200'
+                    : 'border-gray-200 bg-white'
                 }`}
               />
 
@@ -491,7 +491,7 @@ export default function Home() {
                 <button
                   onClick={handleCheckAnswer}
                   disabled={feedback !== null || userAnswer.trim() === ''}
-                  className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                  className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 disabled:bg-purple-200 disabled:text-purple-400 disabled:cursor-not-allowed transition-colors"
                 >
                   Check Answer
                 </button>
