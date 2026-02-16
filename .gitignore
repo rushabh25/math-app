@@ -22,5 +22,10 @@ npm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# SQLite
+*.db
+*.db-wal
+*.db-shm
+
 # claude
 .claude

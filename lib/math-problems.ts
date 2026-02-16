@@ -1,10 +1,10 @@
-export type ProblemType = 'addition' | 'subtraction' | 'multiplication' | 'division' | 'fractions' | 'word' | 'graphs' | 'mixed' | 'decimals' | 'percentages' | 'patterns' | 'ratios';
+export type ProblemType = 'addition' | 'subtraction' | 'multiplication' | 'division' | 'fractions' | 'word' | 'graphs' | 'mixed' | 'decimals' | 'percentages' | 'patterns' | 'ratios' | 'time' | 'measurement' | 'interpretData' | 'random';
 export type Grade = '1st' | '2nd' | '3rd' | '4th' | '5th' | '6th';
 
 export interface ChartData {
   labels: string[];
   values: number[];
-  chartType: 'bar' | 'line' | 'pie';
+  chartType: 'bar' | 'line' | 'pie' | 'clock';
 }
 
 export interface Problem {
@@ -32,6 +32,10 @@ export const allProblemTypes: ProblemTypeInfo[] = [
   { id: 'graphs', label: 'Graphs', grades: [4, 5] },
   { id: 'percentages', label: 'Percentages', grades: [5] },
   { id: 'ratios', label: 'Ratios', grades: [5] },
+  { id: 'time', label: 'Time', grades: [2, 3] },
+  { id: 'measurement', label: 'Measurement', grades: [2, 3] },
+  { id: 'interpretData', label: 'Interpret Data', grades: [2, 3] },
+  { id: 'random', label: 'Random', grades: [1, 2, 3, 4, 5] },
   { id: 'mixed', label: 'Mixed', grades: [3, 4, 5] },
 ];
 
@@ -780,11 +784,484 @@ export const generateProblem = (type: ProblemType, grade: Grade): Problem => {
         };
       }
     }
+    case 'time': {
+      const problemType = Math.floor(Math.random() * (gradeLevel <= 2 ? 13 : 15));
+
+      if (problemType === 0) {
+        // Analog clock: read the hour (exact hour)
+        const hour = Math.floor(Math.random() * 12) + 1;
+        return {
+          question: `Look at the clock. What hour is it showing? (Enter the hour number)`,
+          answer: hour,
+          type,
+          chartData: { labels: ['hour', 'minutes'], values: [hour, 0], chartType: 'clock' },
+        };
+      } else if (problemType === 1) {
+        // Analog clock: read half past
+        const hour = Math.floor(Math.random() * 12) + 1;
+        return {
+          question: `Look at the clock. How many minutes past ${hour} does it show?`,
+          answer: 30,
+          type,
+          chartData: { labels: ['hour', 'minutes'], values: [hour, 30], chartType: 'clock' },
+        };
+      } else if (problemType === 2) {
+        // Analog clock: read quarter past
+        const hour = Math.floor(Math.random() * 12) + 1;
+        return {
+          question: `Look at the clock. How many minutes past the hour does it show?`,
+          answer: 15,
+          type,
+          chartData: { labels: ['hour', 'minutes'], values: [hour, 15], chartType: 'clock' },
+        };
+      } else if (problemType === 3) {
+        // Analog clock: read quarter to
+        const hour = Math.floor(Math.random() * 12) + 1;
+        return {
+          question: `Look at the clock. How many minutes past ${hour} does it show?`,
+          answer: 45,
+          type,
+          chartData: { labels: ['hour', 'minutes'], values: [hour, 45], chartType: 'clock' },
+        };
+      } else if (problemType === 4) {
+        // Analog clock: read 5-minute intervals
+        const hour = Math.floor(Math.random() * 12) + 1;
+        const minutes = (Math.floor(Math.random() * 12)) * 5;
+        return {
+          question: `Look at the clock. How many minutes past the hour does it show?`,
+          answer: minutes,
+          type,
+          chartData: { labels: ['hour', 'minutes'], values: [hour, minutes], chartType: 'clock' },
+        };
+      } else if (problemType === 5) {
+        // Elapsed time in hours
+        const start = Math.floor(Math.random() * 10) + 1;
+        const elapsed = Math.floor(Math.random() * 4) + 1;
+        const end = start + elapsed;
+        return {
+          question: `If you start at ${start}:00 and finish at ${end}:00, how many hours did it take?`,
+          answer: elapsed,
+          type,
+        };
+      } else if (problemType === 6) {
+        // How many minutes in hours
+        const hours = Math.floor(Math.random() * 3) + 1;
+        return {
+          question: `How many minutes are in ${hours} hour${hours > 1 ? 's' : ''}?`,
+          answer: hours * 60,
+          type,
+        };
+      } else if (problemType === 7) {
+        // Days in a week
+        const weeks = Math.floor(Math.random() * 3) + 1;
+        return {
+          question: `How many days are in ${weeks} week${weeks > 1 ? 's' : ''}?`,
+          answer: weeks * 7,
+          type,
+        };
+      } else if (problemType === 8) {
+        // Elapsed time in half hours
+        const startHour = Math.floor(Math.random() * 10) + 1;
+        const halfHours = Math.floor(Math.random() * 4) + 1;
+        const totalMinutes = halfHours * 30;
+        return {
+          question: `You start reading at ${startHour}:00. You read for ${totalMinutes} minutes. How many minutes did you read?`,
+          answer: totalMinutes,
+          type,
+        };
+      } else if (problemType === 9) {
+        // AM/PM understanding
+        const activities = [
+          { activity: 'breakfast', hour: 7, period: 'morning' },
+          { activity: 'lunch', hour: 12, period: 'afternoon' },
+          { activity: 'dinner', hour: 6, period: 'evening' },
+          { activity: 'school starts', hour: 8, period: 'morning' },
+          { activity: 'bedtime', hour: 9, period: 'night' },
+        ];
+        const picked = activities[Math.floor(Math.random() * activities.length)];
+        return {
+          question: `${picked.activity.charAt(0).toUpperCase() + picked.activity.slice(1)} is usually in the ${picked.period}. What hour does it usually happen? (1-12)`,
+          answer: picked.hour,
+          type,
+        };
+      } else if (problemType === 10) {
+        // Analog clock: what hour will it be in N hours?
+        const hour = Math.floor(Math.random() * 12) + 1;
+        const add = Math.floor(Math.random() * 4) + 1;
+        const resultHour = ((hour + add - 1) % 12) + 1;
+        return {
+          question: `The clock shows ${hour}:00. What hour will it be in ${add} hour${add > 1 ? 's' : ''}? (Enter 1-12)`,
+          answer: resultHour,
+          type,
+          chartData: { labels: ['hour', 'minutes'], values: [hour, 0], chartType: 'clock' },
+        };
+      } else if (problemType === 11) {
+        // Analog clock: elapsed minutes between two shown times
+        const hour = Math.floor(Math.random() * 12) + 1;
+        const startMin = 0;
+        const endMin = [15, 30, 45][Math.floor(Math.random() * 3)];
+        return {
+          question: `The clock shows ${hour}:${endMin < 10 ? '0' : ''}${endMin}. How many minutes have passed since ${hour}:00?`,
+          answer: endMin,
+          type,
+          chartData: { labels: ['hour', 'minutes'], values: [hour, endMin], chartType: 'clock' },
+        };
+      } else if (problemType === 12) {
+        // Analog clock: identify hour hand position
+        const hour = Math.floor(Math.random() * 12) + 1;
+        const minutes = [0, 30][Math.floor(Math.random() * 2)];
+        return {
+          question: `Look at the clock. What number is the short (hour) hand pointing to or closest to?`,
+          answer: hour,
+          type,
+          chartData: { labels: ['hour', 'minutes'], values: [hour, minutes], chartType: 'clock' },
+        };
+      } else if (problemType === 13) {
+        // Grade 3: 5-minute intervals on analog clock
+        const hour = Math.floor(Math.random() * 12) + 1;
+        const fiveMin = (Math.floor(Math.random() * 11) + 1) * 5;
+        return {
+          question: `Look at the clock. What time does it show? Enter just the minutes.`,
+          answer: fiveMin,
+          type,
+          chartData: { labels: ['hour', 'minutes'], values: [hour, fiveMin], chartType: 'clock' },
+        };
+      } else {
+        // Grade 3: elapsed time in minutes
+        const startMin = Math.floor(Math.random() * 4) * 15;
+        const elapsed = (Math.floor(Math.random() * 4) + 1) * 15;
+        const hour = Math.floor(Math.random() * 10) + 1;
+        return {
+          question: `You start a task at ${hour}:${startMin === 0 ? '00' : startMin}. It takes ${elapsed} minutes. How many minutes did the task take?`,
+          answer: elapsed,
+          type,
+        };
+      }
+    }
+    case 'measurement': {
+      const problemType = Math.floor(Math.random() * (gradeLevel <= 2 ? 12 : 14));
+
+      if (problemType === 0) {
+        // Comparing lengths
+        const a = Math.floor(Math.random() * 20) + 3;
+        const b = Math.floor(Math.random() * 20) + 3;
+        const diff = Math.abs(a - b);
+        const longer = Math.max(a, b);
+        const shorter = Math.min(a, b);
+        return {
+          question: `A pencil is ${longer} cm long and a crayon is ${shorter} cm long. How many cm longer is the pencil?`,
+          answer: diff,
+          type,
+        };
+      } else if (problemType === 1) {
+        // Adding lengths
+        const a = Math.floor(Math.random() * 15) + 2;
+        const b = Math.floor(Math.random() * 15) + 2;
+        return {
+          question: `A ribbon is ${a} inches long. Another ribbon is ${b} inches long. How long are they together?`,
+          answer: a + b,
+          type,
+        };
+      } else if (problemType === 2) {
+        // Feet to inches
+        const feet = Math.floor(Math.random() * 3) + 1;
+        return {
+          question: `How many inches are in ${feet} foot${feet > 1 ? '' : ''}? (1 foot = 12 inches)`,
+          answer: feet * 12,
+          type,
+        };
+      } else if (problemType === 3) {
+        // Measuring with a ruler
+        const objects = ['book', 'eraser', 'marker', 'paper clip', 'shoe'];
+        const obj = objects[Math.floor(Math.random() * objects.length)];
+        const length = Math.floor(Math.random() * 10) + 3;
+        const start = Math.floor(Math.random() * 5) + 1;
+        const end = start + length;
+        return {
+          question: `A ${obj} starts at the ${start} cm mark and ends at the ${end} cm mark on a ruler. How long is it?`,
+          answer: length,
+          type,
+        };
+      } else if (problemType === 4) {
+        // Weight comparison
+        const a = Math.floor(Math.random() * 20) + 5;
+        const b = Math.floor(Math.random() * 20) + 5;
+        const heavier = Math.max(a, b);
+        const lighter = Math.min(a, b);
+        return {
+          question: `A bag of apples weighs ${heavier} pounds. A bag of oranges weighs ${lighter} pounds. How much heavier is the apples bag?`,
+          answer: heavier - lighter,
+          type,
+        };
+      } else if (problemType === 5) {
+        // Liquid measurement
+        const cups = Math.floor(Math.random() * 6) + 2;
+        const more = Math.floor(Math.random() * 4) + 1;
+        return {
+          question: `A jug has ${cups} cups of water. You add ${more} more cups. How many cups of water are in the jug now?`,
+          answer: cups + more,
+          type,
+        };
+      } else if (problemType === 6) {
+        // Perimeter of a rectangle
+        const length = Math.floor(Math.random() * 8) + 2;
+        const width = Math.floor(Math.random() * 6) + 1;
+        return {
+          question: `A rectangle is ${length} cm long and ${width} cm wide. What is its perimeter? (Add all sides)`,
+          answer: 2 * (length + width),
+          type,
+        };
+      } else if (problemType === 7) {
+        // Estimating length
+        const objects = [
+          { name: 'a banana', approxCm: 20 },
+          { name: 'a pencil', approxCm: 19 },
+          { name: 'a book', approxCm: 25 },
+          { name: 'a hand span', approxCm: 18 },
+        ];
+        const obj = objects[Math.floor(Math.random() * objects.length)];
+        const itemCount = Math.floor(Math.random() * 3) + 2;
+        return {
+          question: `${obj.name.charAt(0).toUpperCase() + obj.name.slice(1)} is about ${obj.approxCm} cm long. How many cm long would ${itemCount} of them be laid end to end?`,
+          answer: obj.approxCm * itemCount,
+          type,
+        };
+      } else if (problemType === 8) {
+        // Bar chart: heights of plants — find the tallest
+        const plants = ['Sunflower', 'Tulip', 'Daisy', 'Rose'];
+        const heights = plants.map(() => Math.floor(Math.random() * 15) + 5);
+        const maxHeight = Math.max(...heights);
+        return {
+          question: `Look at the chart showing plant heights in cm. What is the height of the tallest plant?`,
+          answer: maxHeight,
+          type,
+          chartData: { labels: plants, values: heights, chartType: 'bar' },
+        };
+      } else if (problemType === 9) {
+        // Bar chart: heights of objects — find the difference
+        const items = ['Chair', 'Table', 'Shelf', 'Lamp'];
+        const heights = items.map(() => Math.floor(Math.random() * 20) + 10);
+        const idx1 = Math.floor(Math.random() * items.length);
+        let idx2 = Math.floor(Math.random() * items.length);
+        while (idx2 === idx1) idx2 = Math.floor(Math.random() * items.length);
+        const diff = Math.abs(heights[idx1] - heights[idx2]);
+        return {
+          question: `Look at the chart showing heights in inches. How much taller is ${items[idx1]} than ${items[idx2]}? (Use absolute difference)`,
+          answer: diff,
+          type,
+          chartData: { labels: items, values: heights, chartType: 'bar' },
+        };
+      } else if (problemType === 10) {
+        // Bar chart: weights — find total
+        const fruits = ['Apples', 'Oranges', 'Bananas'];
+        const weights = fruits.map(() => Math.floor(Math.random() * 8) + 2);
+        const total = weights.reduce((a, b) => a + b, 0);
+        return {
+          question: `Look at the chart showing weights in pounds. What is the total weight of all fruits?`,
+          answer: total,
+          type,
+          chartData: { labels: fruits, values: weights, chartType: 'bar' },
+        };
+      } else if (problemType === 11) {
+        // Bar chart: lengths of rivers/paths — find shortest
+        const paths = ['Trail A', 'Trail B', 'Trail C', 'Trail D'];
+        const lengths = paths.map(() => Math.floor(Math.random() * 12) + 3);
+        const minLen = Math.min(...lengths);
+        return {
+          question: `Look at the chart showing trail lengths in km. What is the length of the shortest trail?`,
+          answer: minLen,
+          type,
+          chartData: { labels: paths, values: lengths, chartType: 'bar' },
+        };
+      } else if (problemType === 12) {
+        // Centimeters to meters (grade 3)
+        const meters = Math.floor(Math.random() * 5) + 1;
+        return {
+          question: `How many centimeters are in ${meters} meter${meters > 1 ? 's' : ''}? (1 meter = 100 cm)`,
+          answer: meters * 100,
+          type,
+        };
+      } else {
+        // Multi-step measurement (grade 3)
+        const pieces = Math.floor(Math.random() * 4) + 2;
+        const each = Math.floor(Math.random() * 8) + 3;
+        const cut = Math.floor(Math.random() * (pieces * each - 5)) + 2;
+        const total = pieces * each;
+        return {
+          question: `You have ${pieces} pieces of string, each ${each} cm long. You tie them together (total ${total} cm) and cut off ${cut} cm. How long is the remaining string?`,
+          answer: total - cut,
+          type,
+        };
+      }
+    }
+    case 'interpretData': {
+      const problemType = Math.floor(Math.random() * (gradeLevel <= 2 ? 10 : 12));
+
+      if (problemType === 0) {
+        // Bar chart: pet survey — find the most popular
+        const pets = ['Dogs', 'Cats', 'Birds', 'Fish'];
+        const counts = pets.map(() => Math.floor(Math.random() * 10) + 2);
+        const maxVal = Math.max(...counts);
+        return {
+          question: `Look at the bar chart showing a class pet survey. How many students chose the most popular pet?`,
+          answer: maxVal,
+          type,
+          chartData: { labels: pets, values: counts, chartType: 'bar' },
+        };
+      } else if (problemType === 1) {
+        // Bar chart: ice cream flavors — find the total
+        const flavors = ['Vanilla', 'Chocolate', 'Strawberry'];
+        const counts = flavors.map(() => Math.floor(Math.random() * 8) + 2);
+        const total = counts.reduce((a, b) => a + b, 0);
+        return {
+          question: `Look at the bar chart of favorite ice cream flavors. How many students were surveyed in total?`,
+          answer: total,
+          type,
+          chartData: { labels: flavors, values: counts, chartType: 'bar' },
+        };
+      } else if (problemType === 2) {
+        // Bar chart: sports — how many more
+        const sports = ['Soccer', 'Basketball', 'Baseball'];
+        const counts = sports.map(() => Math.floor(Math.random() * 12) + 3);
+        const maxIdx = counts.indexOf(Math.max(...counts));
+        const minIdx = counts.indexOf(Math.min(...counts));
+        const diff = counts[maxIdx] - counts[minIdx];
+        return {
+          question: `Look at the bar chart of favorite sports. How many more students chose ${sports[maxIdx]} than ${sports[minIdx]}?`,
+          answer: diff,
+          type,
+          chartData: { labels: sports, values: counts, chartType: 'bar' },
+        };
+      } else if (problemType === 3) {
+        // Bar chart: fruits sold — combine two categories
+        const fruits = ['Apples', 'Bananas', 'Grapes', 'Oranges'];
+        const counts = fruits.map(() => Math.floor(Math.random() * 10) + 2);
+        const idx1 = Math.floor(Math.random() * fruits.length);
+        let idx2 = Math.floor(Math.random() * fruits.length);
+        while (idx2 === idx1) idx2 = Math.floor(Math.random() * fruits.length);
+        const sum = counts[idx1] + counts[idx2];
+        return {
+          question: `Look at the bar chart of fruit sold. How many ${fruits[idx1]} and ${fruits[idx2]} were sold combined?`,
+          answer: sum,
+          type,
+          chartData: { labels: fruits, values: counts, chartType: 'bar' },
+        };
+      } else if (problemType === 4) {
+        // Bar chart: favorite colors — how many fewer
+        const colors = ['Red', 'Blue', 'Green', 'Yellow'];
+        const counts = colors.map(() => Math.floor(Math.random() * 12) + 2);
+        const idx1 = Math.floor(Math.random() * colors.length);
+        let idx2 = Math.floor(Math.random() * colors.length);
+        while (idx2 === idx1) idx2 = Math.floor(Math.random() * colors.length);
+        const bigger = Math.max(counts[idx1], counts[idx2]);
+        const smaller = Math.min(counts[idx1], counts[idx2]);
+        const bigLabel = counts[idx1] >= counts[idx2] ? colors[idx1] : colors[idx2];
+        const smallLabel = counts[idx1] < counts[idx2] ? colors[idx1] : colors[idx2];
+        return {
+          question: `Look at the bar chart of favorite colors. How many fewer students chose ${smallLabel} than ${bigLabel}?`,
+          answer: bigger - smaller,
+          type,
+          chartData: { labels: colors, values: counts, chartType: 'bar' },
+        };
+      } else if (problemType === 5) {
+        // Pie chart: snacks — find a specific value
+        const snacks = ['Chips', 'Cookies', 'Fruit', 'Crackers'];
+        const counts = snacks.map(() => Math.floor(Math.random() * 8) + 3);
+        const idx = Math.floor(Math.random() * snacks.length);
+        return {
+          question: `Look at the pie chart of favorite snacks. How many students chose ${snacks[idx]}?`,
+          answer: counts[idx],
+          type,
+          chartData: { labels: snacks, values: counts, chartType: 'pie' },
+        };
+      } else if (problemType === 6) {
+        // Pie chart: yes/no survey — total
+        const labels = ['Yes', 'No'];
+        const yes = Math.floor(Math.random() * 15) + 5;
+        const no = Math.floor(Math.random() * 15) + 3;
+        const total = yes + no;
+        const topics = ['like pizza', 'have a pet', 'walk to school', 'like math'];
+        const topic = topics[Math.floor(Math.random() * topics.length)];
+        return {
+          question: `Look at the pie chart for the survey: "Do you ${topic}?" How many students were surveyed in total?`,
+          answer: total,
+          type,
+          chartData: { labels, values: [yes, no], chartType: 'pie' },
+        };
+      } else if (problemType === 7) {
+        // Line chart: daily temperature — find highest
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+        const temps = days.map(() => Math.floor(Math.random() * 15) + 10);
+        const maxTemp = Math.max(...temps);
+        return {
+          question: `Look at the line chart showing daily temperatures. What was the highest temperature this week?`,
+          answer: maxTemp,
+          type,
+          chartData: { labels: days, values: temps, chartType: 'line' },
+        };
+      } else if (problemType === 8) {
+        // Line chart: books read — find the difference between two days
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+        const books = days.map(() => Math.floor(Math.random() * 8) + 1);
+        const idx1 = Math.floor(Math.random() * days.length);
+        let idx2 = Math.floor(Math.random() * days.length);
+        while (idx2 === idx1) idx2 = Math.floor(Math.random() * days.length);
+        const diff = Math.abs(books[idx1] - books[idx2]);
+        return {
+          question: `Look at the line chart showing books read each day. How many more books were read on ${days[idx1]} than ${days[idx2]}? (Use absolute difference)`,
+          answer: diff,
+          type,
+          chartData: { labels: days, values: books, chartType: 'line' },
+        };
+      } else if (problemType === 9) {
+        // Bar chart: find the least popular
+        const animals = ['Cats', 'Dogs', 'Rabbits', 'Hamsters'];
+        const votes = animals.map(() => Math.floor(Math.random() * 12) + 2);
+        const minVal = Math.min(...votes);
+        return {
+          question: `Look at the bar chart of favorite animals. How many votes did the least popular animal get?`,
+          answer: minVal,
+          type,
+          chartData: { labels: animals, values: votes, chartType: 'bar' },
+        };
+      } else if (problemType === 10) {
+        // Line chart: steps walked — total (grade 3)
+        const days = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5'];
+        const counts = days.map(() => Math.floor(Math.random() * 6) + 2);
+        const total = counts.reduce((a, b) => a + b, 0);
+        return {
+          question: `Look at the line chart showing laps walked each day. How many laps were walked in total?`,
+          answer: total,
+          type,
+          chartData: { labels: days, values: counts, chartType: 'line' },
+        };
+      } else {
+        // Pie chart: t-shirt sizes — most popular (grade 3)
+        const sizes = ['Small', 'Medium', 'Large'];
+        const counts = sizes.map(() => Math.floor(Math.random() * 8) + 2);
+        const maxIdx = Math.floor(Math.random() * 3);
+        counts[maxIdx] = Math.max(...counts) + Math.floor(Math.random() * 3) + 1;
+        return {
+          question: `Look at the pie chart of t-shirt sizes ordered. How many of the most popular size were ordered?`,
+          answer: counts[maxIdx],
+          type,
+          chartData: { labels: sizes, values: counts, chartType: 'pie' },
+        };
+      }
+    }
+    case 'random': {
+      const gradeNum = parseInt(grade);
+      const availableTypes = allProblemTypes
+        .filter(t => t.grades.includes(gradeNum) && t.id !== 'random' && t.id !== 'mixed')
+        .map(t => t.id);
+      const pickedType = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+      return generateProblem(pickedType, grade);
+    }
     case 'mixed': {
       // Get available types for this grade (excluding mixed itself)
       const gradeNum = parseInt(grade);
       const availableTypes = allProblemTypes
-        .filter(t => t.grades.includes(gradeNum) && t.id !== 'mixed')
+        .filter(t => t.grades.includes(gradeNum) && t.id !== 'mixed' && t.id !== 'random')
         .map(t => t.id);
       const randomType = availableTypes[Math.floor(Math.random() * availableTypes.length)];
       return generateProblem(randomType, grade);
