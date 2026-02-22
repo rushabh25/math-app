@@ -22,6 +22,8 @@ import {
   Ruler,
   Table,
   Dices,
+  Square,
+  Triangle,
 } from 'lucide-react';
 import {
   type ProblemType,
@@ -48,6 +50,8 @@ const iconMap: Record<ProblemType, React.ComponentType<{ className?: string }>> 
   time: Clock,
   measurement: Ruler,
   interpretData: Table,
+  perimeter: Square,
+  geometry: Triangle,
   random: Dices,
   mixed: Shuffle,
 };
@@ -372,6 +376,109 @@ const AnalogClock = ({ hour, minutes }: { hour: number; minutes: number }) => {
   );
 };
 
+const RulerChart = ({ labels, values }: { labels: string[]; values: number[] }) => {
+  const colors = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981'];
+
+  // Positioned measurement mode: 1 label + 2 values (start, end position on ruler)
+  if (labels.length === 1 && values.length === 2) {
+    const start = values[0];
+    const end = values[1];
+    const rulerEnd = end + 3;
+    const pad = 50;
+    const w = 400;
+    const s = w / rulerEnd;
+
+    return (
+      <div className="w-full max-w-2xl mx-auto p-6 bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl border-2 border-amber-200">
+        <svg width="100%" height="145" viewBox="0 0 500 145">
+          {/* Ruler body */}
+          <rect x={pad} y="25" width={w} height="40" fill="#fef3c7" stroke="#d97706" strokeWidth="2" rx="3" />
+
+          {/* Tick marks and numbers */}
+          {Array.from({ length: rulerEnd + 1 }).map((_, i) => {
+            const x = pad + i * s;
+            return (
+              <g key={i}>
+                <line x1={x} y1="25" x2={x} y2={25 + (i % 5 === 0 ? 28 : 16)} stroke="#92400e" strokeWidth={i % 5 === 0 ? 2 : 1} />
+                <text x={x} y="18" textAnchor="middle" fill="#78350f" fontSize="11" fontWeight="bold">{i}</text>
+              </g>
+            );
+          })}
+
+          {/* Object bar */}
+          <rect x={pad + start * s} y="78" width={(end - start) * s} height="22" fill="#7c3aed" rx="4" />
+          <text x={pad + (start + end) / 2 * s} y="93" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">{labels[0]}</text>
+
+          {/* Guide lines */}
+          <line x1={pad + start * s} y1="65" x2={pad + start * s} y2="107" stroke="#7c3aed" strokeWidth="1.5" strokeDasharray="3" />
+          <line x1={pad + end * s} y1="65" x2={pad + end * s} y2="107" stroke="#7c3aed" strokeWidth="1.5" strokeDasharray="3" />
+
+          {/* Measurement bracket */}
+          <line x1={pad + start * s + 3} y1="118" x2={pad + end * s - 3} y2="118" stroke="#374151" strokeWidth="2" />
+          <line x1={pad + start * s + 3} y1="113" x2={pad + start * s + 3} y2="123" stroke="#374151" strokeWidth="2" />
+          <line x1={pad + end * s - 3} y1="113" x2={pad + end * s - 3} y2="123" stroke="#374151" strokeWidth="2" />
+          <text x={pad + (start + end) / 2 * s} y="140" textAnchor="middle" fill="#374151" fontSize="13" fontWeight="bold">? cm</text>
+        </svg>
+      </div>
+    );
+  }
+
+  // Comparison mode: items shown as bars aligned to a ruler scale
+  const maxVal = Math.max(...values);
+  const rulerEnd = maxVal + 3;
+  const pad = 80;
+  const w = 380;
+  const s = w / rulerEnd;
+  const barH = 28;
+  const gap = 12;
+  const rulerY = 15;
+  const barsY = rulerY + 55;
+  const h = barsY + labels.length * (barH + gap) + 5;
+
+  return (
+    <div className="w-full max-w-2xl mx-auto p-6 bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl border-2 border-amber-200">
+      <svg width="100%" height={h} viewBox={`0 0 500 ${h}`}>
+        {/* Ruler body */}
+        <rect x={pad} y={rulerY} width={w} height="38" fill="#fef3c7" stroke="#d97706" strokeWidth="2" rx="3" />
+
+        {/* Tick marks and numbers */}
+        {Array.from({ length: rulerEnd + 1 }).map((_, i) => {
+          const x = pad + i * s;
+          return (
+            <g key={i}>
+              <line x1={x} y1={rulerY} x2={x} y2={rulerY + (i % 5 === 0 ? 26 : 15)} stroke="#92400e" strokeWidth={i % 5 === 0 ? 2 : 1} />
+              {(rulerEnd <= 25 || i % 2 === 0) && (
+                <text x={x} y={rulerY - 4} textAnchor="middle" fill="#78350f" fontSize="10" fontWeight="bold">{i}</text>
+              )}
+            </g>
+          );
+        })}
+
+        {/* cm label */}
+        <text x={pad + w + 8} y={rulerY + 25} fill="#92400e" fontSize="11" fontWeight="bold">cm</text>
+
+        {/* Item bars */}
+        {labels.map((label, i) => {
+          const y = barsY + i * (barH + gap);
+          const bw = values[i] * s;
+          return (
+            <g key={i}>
+              {/* Dashed guide line from bar end to ruler */}
+              <line x1={pad + bw} y1={rulerY + 38} x2={pad + bw} y2={y + barH / 2} stroke={colors[i % colors.length]} strokeWidth="1" strokeDasharray="3" opacity="0.4" />
+              {/* Bar */}
+              <rect x={pad} y={y} width={bw} height={barH} fill={colors[i % colors.length]} rx="4" opacity="0.85" />
+              {/* Label */}
+              <text x={pad - 5} y={y + barH / 2 + 4} textAnchor="end" fill="#374151" fontSize="12" fontWeight="600">{label}</text>
+              {/* Value on bar */}
+              <text x={pad + bw / 2} y={y + barH / 2 + 4} textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">{values[i]}</text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+};
+
 export default function Home() {
   const router = useRouter();
   const [grade, setGrade] = useState<Grade>('2nd');
@@ -659,7 +766,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 py-4 px-6">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="text-gray-400 text-sm">Math Problem Generator</div>
+          <div className="text-gray-400 text-sm">Developed by: Rushabh Shah</div>
           <div className="flex items-center gap-3">
             {userName && <span className="text-gray-700 text-sm font-medium">Hi, {userName}!</span>}
             <button
@@ -871,6 +978,9 @@ export default function Home() {
                 {currentProblem.chartData.chartType === 'clock' && (
                   <AnalogClock hour={currentProblem.chartData.values[0]} minutes={currentProblem.chartData.values[1]} />
                 )}
+                {currentProblem.chartData.chartType === 'ruler' && (
+                  <RulerChart labels={currentProblem.chartData.labels} values={currentProblem.chartData.values} />
+                )}
               </div>
             )}
 
@@ -973,6 +1083,9 @@ export default function Home() {
                 )}
                 {currentProblem.chartData.chartType === 'clock' && (
                   <AnalogClock hour={currentProblem.chartData.values[0]} minutes={currentProblem.chartData.values[1]} />
+                )}
+                {currentProblem.chartData.chartType === 'ruler' && (
+                  <RulerChart labels={currentProblem.chartData.labels} values={currentProblem.chartData.values} />
                 )}
               </div>
             )}

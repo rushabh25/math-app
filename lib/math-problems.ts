@@ -1,10 +1,10 @@
-export type ProblemType = 'addition' | 'subtraction' | 'multiplication' | 'division' | 'fractions' | 'word' | 'graphs' | 'mixed' | 'decimals' | 'percentages' | 'patterns' | 'ratios' | 'time' | 'measurement' | 'interpretData' | 'random';
+export type ProblemType = 'addition' | 'subtraction' | 'multiplication' | 'division' | 'fractions' | 'word' | 'graphs' | 'mixed' | 'decimals' | 'percentages' | 'patterns' | 'ratios' | 'time' | 'measurement' | 'interpretData' | 'random' | 'perimeter' | 'geometry';
 export type Grade = '1st' | '2nd' | '3rd' | '4th' | '5th' | '6th';
 
 export interface ChartData {
   labels: string[];
   values: number[];
-  chartType: 'bar' | 'line' | 'pie' | 'clock';
+  chartType: 'bar' | 'line' | 'pie' | 'clock' | 'ruler';
 }
 
 export interface Problem {
@@ -21,25 +21,23 @@ export interface ProblemTypeInfo {
 }
 
 export const allProblemTypes: ProblemTypeInfo[] = [
-  { id: 'addition', label: 'Addition', grades: [1, 2, 3] },
-  { id: 'subtraction', label: 'Subtraction', grades: [1, 2, 3] },
+  { id: 'addition', label: 'Addition', grades: [1, 2] },
+  { id: 'subtraction', label: 'Subtraction', grades: [1, 2] },
   { id: 'patterns', label: 'Patterns', grades: [1, 2] },
-  { id: 'multiplication', label: 'Multiplication', grades: [2, 3, 4, 5] },
-  { id: 'division', label: 'Division', grades: [2, 3, 4, 5] },
-  { id: 'word', label: 'Word Problems', grades: [2, 3, 4, 5] },
-  { id: 'fractions', label: 'Fractions', grades: [3, 4, 5] },
-  { id: 'decimals', label: 'Decimals', grades: [4, 5] },
-  { id: 'graphs', label: 'Graphs', grades: [4, 5] },
-  { id: 'percentages', label: 'Percentages', grades: [5] },
-  { id: 'ratios', label: 'Ratios', grades: [5] },
+  { id: 'multiplication', label: 'Multiplication', grades: [2, 3] },
+  { id: 'division', label: 'Division', grades: [2, 3] },
+  { id: 'word', label: 'Word Problems', grades: [2, 3] },
+  { id: 'fractions', label: 'Fractions', grades: [3] },
   { id: 'time', label: 'Time', grades: [2, 3] },
   { id: 'measurement', label: 'Measurement', grades: [2, 3] },
   { id: 'interpretData', label: 'Interpret Data', grades: [2, 3] },
-  { id: 'random', label: 'Random', grades: [1, 2, 3, 4, 5] },
-  { id: 'mixed', label: 'Mixed', grades: [3, 4, 5] },
+  { id: 'perimeter', label: 'Perimeter', grades: [3] },
+  { id: 'geometry', label: 'Geometry', grades: [3] },
+  { id: 'random', label: 'Random', grades: [1, 2, 3] },
+  { id: 'mixed', label: 'Mixed', grades: [3] },
 ];
 
-export const grades: Grade[] = ['1st', '2nd', '3rd', '4th', '5th'];
+export const grades: Grade[] = ['1st', '2nd', '3rd'];
 
 export const getProblemTypesForGrade = (grade: Grade): ProblemTypeInfo[] => {
   const gradeNum = parseInt(grade);
@@ -949,18 +947,20 @@ export const generateProblem = (type: ProblemType, grade: Grade): Problem => {
         const longer = Math.max(a, b);
         const shorter = Math.min(a, b);
         return {
-          question: `A pencil is ${longer} cm long and a crayon is ${shorter} cm long. How many cm longer is the pencil?`,
+          question: `Look at the ruler. A pencil is ${longer} cm and a crayon is ${shorter} cm. How many cm longer is the pencil?`,
           answer: diff,
           type,
+          chartData: { labels: ['Pencil', 'Crayon'], values: [longer, shorter], chartType: 'ruler' },
         };
       } else if (problemType === 1) {
         // Adding lengths
         const a = Math.floor(Math.random() * 15) + 2;
         const b = Math.floor(Math.random() * 15) + 2;
         return {
-          question: `A ribbon is ${a} inches long. Another ribbon is ${b} inches long. How long are they together?`,
+          question: `Look at the ruler. A ribbon is ${a} cm and another is ${b} cm. How long are they together?`,
           answer: a + b,
           type,
+          chartData: { labels: ['Ribbon 1', 'Ribbon 2'], values: [a, b], chartType: 'ruler' },
         };
       } else if (problemType === 2) {
         // Feet to inches
@@ -978,9 +978,10 @@ export const generateProblem = (type: ProblemType, grade: Grade): Problem => {
         const start = Math.floor(Math.random() * 5) + 1;
         const end = start + length;
         return {
-          question: `A ${obj} starts at the ${start} cm mark and ends at the ${end} cm mark on a ruler. How long is it?`,
+          question: `Look at the ruler. The ${obj} starts at ${start} cm and ends at ${end} cm. How long is it?`,
           answer: length,
           type,
+          chartData: { labels: [obj.charAt(0).toUpperCase() + obj.slice(1)], values: [start, end], chartType: 'ruler' },
         };
       } else if (problemType === 4) {
         // Weight comparison
@@ -989,27 +990,30 @@ export const generateProblem = (type: ProblemType, grade: Grade): Problem => {
         const heavier = Math.max(a, b);
         const lighter = Math.min(a, b);
         return {
-          question: `A bag of apples weighs ${heavier} pounds. A bag of oranges weighs ${lighter} pounds. How much heavier is the apples bag?`,
+          question: `Look at the chart. Apples weigh ${heavier} lbs and oranges weigh ${lighter} lbs. How much heavier are the apples?`,
           answer: heavier - lighter,
           type,
+          chartData: { labels: ['Apples', 'Oranges'], values: [heavier, lighter], chartType: 'bar' },
         };
       } else if (problemType === 5) {
         // Liquid measurement
         const cups = Math.floor(Math.random() * 6) + 2;
         const more = Math.floor(Math.random() * 4) + 1;
         return {
-          question: `A jug has ${cups} cups of water. You add ${more} more cups. How many cups of water are in the jug now?`,
+          question: `Look at the chart. A jug has ${cups} cups of water. You add ${more} more cups. How many cups total?`,
           answer: cups + more,
           type,
+          chartData: { labels: ['In Jug', 'Adding'], values: [cups, more], chartType: 'bar' },
         };
       } else if (problemType === 6) {
         // Perimeter of a rectangle
         const length = Math.floor(Math.random() * 8) + 2;
         const width = Math.floor(Math.random() * 6) + 1;
         return {
-          question: `A rectangle is ${length} cm long and ${width} cm wide. What is its perimeter? (Add all sides)`,
+          question: `Look at the ruler. A rectangle is ${length} cm long and ${width} cm wide. What is its perimeter? (Add all sides)`,
           answer: 2 * (length + width),
           type,
+          chartData: { labels: ['Length', 'Width'], values: [length, width], chartType: 'ruler' },
         };
       } else if (problemType === 7) {
         // Estimating length
@@ -1022,9 +1026,10 @@ export const generateProblem = (type: ProblemType, grade: Grade): Problem => {
         const obj = objects[Math.floor(Math.random() * objects.length)];
         const itemCount = Math.floor(Math.random() * 3) + 2;
         return {
-          question: `${obj.name.charAt(0).toUpperCase() + obj.name.slice(1)} is about ${obj.approxCm} cm long. How many cm long would ${itemCount} of them be laid end to end?`,
+          question: `Look at the ruler. ${obj.name.charAt(0).toUpperCase() + obj.name.slice(1)} is about ${obj.approxCm} cm. How many cm would ${itemCount} of them be end to end?`,
           answer: obj.approxCm * itemCount,
           type,
+          chartData: { labels: [obj.name.charAt(0).toUpperCase() + obj.name.slice(1)], values: [obj.approxCm], chartType: 'ruler' },
         };
       } else if (problemType === 8) {
         // Bar chart: heights of plants — find the tallest
@@ -1246,6 +1251,234 @@ export const generateProblem = (type: ProblemType, grade: Grade): Problem => {
           answer: counts[maxIdx],
           type,
           chartData: { labels: sizes, values: counts, chartType: 'pie' },
+        };
+      }
+    }
+    case 'perimeter': {
+      const problemType = Math.floor(Math.random() * 8);
+
+      if (problemType === 0) {
+        // Perimeter of a rectangle
+        const length = Math.floor(Math.random() * 10) + 3;
+        const width = Math.floor(Math.random() * 8) + 2;
+        return {
+          question: `A rectangle is ${length} cm long and ${width} cm wide. What is its perimeter?`,
+          answer: 2 * (length + width),
+          type,
+          chartData: { labels: ['Length', 'Width'], values: [length, width], chartType: 'ruler' },
+        };
+      } else if (problemType === 1) {
+        // Perimeter of a square
+        const side = Math.floor(Math.random() * 10) + 2;
+        return {
+          question: `A square has sides of ${side} cm. What is its perimeter?`,
+          answer: 4 * side,
+          type,
+        };
+      } else if (problemType === 2) {
+        // Perimeter of a triangle
+        const a = Math.floor(Math.random() * 8) + 3;
+        const b = Math.floor(Math.random() * 8) + 3;
+        const c = Math.floor(Math.random() * 8) + 3;
+        return {
+          question: `A triangle has sides of ${a} cm, ${b} cm, and ${c} cm. What is its perimeter?`,
+          answer: a + b + c,
+          type,
+        };
+      } else if (problemType === 3) {
+        // Find missing side of rectangle given perimeter
+        const length = Math.floor(Math.random() * 8) + 3;
+        const width = Math.floor(Math.random() * 6) + 2;
+        const perimeter = 2 * (length + width);
+        return {
+          question: `A rectangle has a perimeter of ${perimeter} cm. One side is ${length} cm. How long is the other side?`,
+          answer: width,
+          type,
+        };
+      } else if (problemType === 4) {
+        // Perimeter word problem — garden fence
+        const length = Math.floor(Math.random() * 12) + 5;
+        const width = Math.floor(Math.random() * 8) + 3;
+        return {
+          question: `A garden is ${length} m long and ${width} m wide. How many meters of fence are needed to go around it?`,
+          answer: 2 * (length + width),
+          type,
+        };
+      } else if (problemType === 5) {
+        // Perimeter word problem — picture frame
+        const side = Math.floor(Math.random() * 8) + 4;
+        return {
+          question: `A square picture frame has sides of ${side} inches. How many inches of border are needed to go around it?`,
+          answer: 4 * side,
+          type,
+        };
+      } else if (problemType === 6) {
+        // Perimeter of an equilateral triangle
+        const side = Math.floor(Math.random() * 8) + 3;
+        return {
+          question: `An equilateral triangle has all sides equal to ${side} cm. What is its perimeter?`,
+          answer: 3 * side,
+          type,
+        };
+      } else {
+        // Add all sides of irregular shape
+        const sides = [
+          Math.floor(Math.random() * 5) + 2,
+          Math.floor(Math.random() * 5) + 2,
+          Math.floor(Math.random() * 5) + 2,
+          Math.floor(Math.random() * 5) + 2,
+          Math.floor(Math.random() * 5) + 2,
+        ];
+        const total = sides.reduce((a, b) => a + b, 0);
+        return {
+          question: `A shape has 5 sides measuring ${sides.join(' cm, ')} cm. What is the perimeter?`,
+          answer: total,
+          type,
+        };
+      }
+    }
+    case 'geometry': {
+      const problemType = Math.floor(Math.random() * 10);
+
+      if (problemType === 0) {
+        // How many sides does a shape have?
+        const shapes = [
+          { name: 'triangle', sides: 3 },
+          { name: 'square', sides: 4 },
+          { name: 'rectangle', sides: 4 },
+          { name: 'pentagon', sides: 5 },
+          { name: 'hexagon', sides: 6 },
+          { name: 'octagon', sides: 8 },
+        ];
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        return {
+          question: `How many sides does a ${shape.name} have?`,
+          answer: shape.sides,
+          type,
+        };
+      } else if (problemType === 1) {
+        // How many corners/vertices?
+        const shapes = [
+          { name: 'triangle', corners: 3 },
+          { name: 'square', corners: 4 },
+          { name: 'rectangle', corners: 4 },
+          { name: 'pentagon', corners: 5 },
+          { name: 'hexagon', corners: 6 },
+          { name: 'octagon', corners: 8 },
+        ];
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        return {
+          question: `How many corners (vertices) does a ${shape.name} have?`,
+          answer: shape.corners,
+          type,
+        };
+      } else if (problemType === 2) {
+        // Area of rectangle
+        const length = Math.floor(Math.random() * 10) + 2;
+        const width = Math.floor(Math.random() * 8) + 2;
+        return {
+          question: `A rectangle is ${length} cm long and ${width} cm wide. What is its area? (length × width)`,
+          answer: length * width,
+          type,
+          chartData: { labels: ['Length', 'Width'], values: [length, width], chartType: 'ruler' },
+        };
+      } else if (problemType === 3) {
+        // Area of square
+        const side = Math.floor(Math.random() * 8) + 2;
+        return {
+          question: `A square has sides of ${side} cm. What is its area? (side × side)`,
+          answer: side * side,
+          type,
+        };
+      } else if (problemType === 4) {
+        // Right angles in shapes
+        const shapes = [
+          { name: 'square', angles: 4 },
+          { name: 'rectangle', angles: 4 },
+          { name: 'right triangle', angles: 1 },
+        ];
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        return {
+          question: `How many right angles (90°) does a ${shape.name} have?`,
+          answer: shape.angles,
+          type,
+        };
+      } else if (problemType === 5) {
+        // Lines of symmetry
+        const shapes = [
+          { name: 'square', lines: 4 },
+          { name: 'rectangle', lines: 2 },
+          { name: 'equilateral triangle', lines: 3 },
+          { name: 'circle', lines: 0 },
+        ];
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        if (shape.name === 'circle') {
+          return {
+            question: `Does a circle have a finite number of lines of symmetry? Enter 0 for no (it has infinite).`,
+            answer: 0,
+            type,
+          };
+        }
+        return {
+          question: `How many lines of symmetry does a ${shape.name} have?`,
+          answer: shape.lines,
+          type,
+        };
+      } else if (problemType === 6) {
+        // Find missing side of rectangle given area
+        const length = Math.floor(Math.random() * 8) + 2;
+        const width = Math.floor(Math.random() * 6) + 2;
+        const area = length * width;
+        return {
+          question: `A rectangle has an area of ${area} sq cm. One side is ${length} cm. How long is the other side?`,
+          answer: width,
+          type,
+        };
+      } else if (problemType === 7) {
+        // Faces of 3D shapes
+        const shapes = [
+          { name: 'cube', faces: 6 },
+          { name: 'rectangular prism (box)', faces: 6 },
+          { name: 'triangular prism', faces: 5 },
+          { name: 'cylinder', faces: 3 },
+          { name: 'cone', faces: 2 },
+          { name: 'sphere', faces: 1 },
+        ];
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        return {
+          question: `How many faces does a ${shape.name} have?`,
+          answer: shape.faces,
+          type,
+        };
+      } else if (problemType === 8) {
+        // Edges of 3D shapes
+        const shapes = [
+          { name: 'cube', edges: 12 },
+          { name: 'rectangular prism', edges: 12 },
+          { name: 'triangular prism', edges: 9 },
+          { name: 'square pyramid', edges: 8 },
+          { name: 'triangular pyramid', edges: 6 },
+        ];
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        return {
+          question: `How many edges does a ${shape.name} have?`,
+          answer: shape.edges,
+          type,
+        };
+      } else {
+        // Shape from description
+        const descriptions = [
+          { desc: '4 equal sides and 4 right angles', answer: 4, name: 'square' },
+          { desc: '3 sides and 3 corners', answer: 3, name: 'triangle' },
+          { desc: '2 long sides, 2 short sides, and 4 right angles', answer: 4, name: 'rectangle' },
+          { desc: '6 equal sides', answer: 6, name: 'hexagon' },
+          { desc: '8 sides', answer: 8, name: 'octagon' },
+        ];
+        const item = descriptions[Math.floor(Math.random() * descriptions.length)];
+        return {
+          question: `I have ${item.desc}. How many sides do I have? (I am a ${item.name})`,
+          answer: item.answer,
+          type,
         };
       }
     }
